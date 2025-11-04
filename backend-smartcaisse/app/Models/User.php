@@ -9,13 +9,16 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 
 class User extends Authenticatable implements LaratrustUser
 {
     use HasApiTokens, HasFactory, Notifiable,HasRolesAndPermissions;
+   
 
-    /**
+    /**  implements MustVerifyEmail
+
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

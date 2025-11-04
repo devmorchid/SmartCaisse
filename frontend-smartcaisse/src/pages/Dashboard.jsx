@@ -1,79 +1,52 @@
-import { useEffect, useState } from "react";
-import axios from "../api/axios";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function Dashboard() {
-  const [stats, setStats] = useState({});
-  const [recentVentes, setRecentVentes] = useState([]);
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  useEffect(() => {
+const handleLogout = async () => {
+  try {
     const token = localStorage.getItem("token");
 
-    axios
-      .get("/dashboard", {
+    await axios.post(
+      "http://localhost:8000/api/logout",
+      {},
+      {
         headers: {
+          Accept: "application/json",
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((res) => {
-        setStats(res.data.stats);
-        setRecentVentes(res.data.recentVentes);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+      }
+    );
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/");
+  } catch (error) {
+    console.error("Erreur lors de la déconnexion:", error.response || error);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/");
+  }
+};
+
+
 
   return (
-    <div className="container mt-5">
-      <h2>📊 Tableau de bord</h2>
-      <div className="row mt-4">
-        <div className="col-md-3">
-          <div className="card p-3">
-            <h5>Ventes</h5>
-            <p>{stats.ventes}</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className="card p-3">
-            <h5>Revenus</h5>
-            <p>{stats.revenus} MAD</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className="card p-3">
-            <h5>Produits</h5>
-            <p>{stats.produits}</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className="card p-3">
-            <h5>Fournisseurs</h5>
-            <p>{stats.fournisseurs}</p>
-          </div>
-        </div>
+    <div className="container py-5">
+      <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h3 className="fw-bold text-primary">
+          👋 Bonjour, {user?.name || "Utilisateur"}
+        </h3>
+        <button
+          className="btn btn-danger px-4 py-2 fw-semibold"
+          onClick={handleLogout}
+        >
+          🚪 Déconnexion
+        </button>
       </div>
-
-      <h4 className="mt-5">🧾 Dernières ventes</h4>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Utilisateur</th>
-            <th>Total</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {recentVentes.map((vente) => (
-            <tr key={vente.id}>
-              <td>{vente.id}</td>
-              <td>{vente.user?.name}</td>
-              <td>{vente.total} MAD</td>
-              <td>{new Date(vente.created_at).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
-
-export default Dashboard;

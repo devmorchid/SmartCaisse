@@ -7,11 +7,14 @@ use App\Http\Controllers\Api\VenteController;
 use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ColisController;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+
 
 use App\Http\Controllers\Api\DashboardController;
+
 
 
 
@@ -85,6 +88,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('colis/{id}', [ColisController::class, 'update']);
     Route::delete('colis/{id}', [ColisController::class, 'destroy']);
 });
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('dashboard/summary', [DashboardController::class, 'summary']);
