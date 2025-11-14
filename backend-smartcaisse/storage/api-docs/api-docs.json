@@ -1,0 +1,213 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SmartCaisse API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local API server"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Créer un nouvel utilisateur (Register)",
+                "description": "Inscription d'un utilisateur via Breeze API",
+                "operationId": "a48a8657f05148e89f60052a1cd28b01",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Mor"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "mor@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Connexion utilisateur (Login)",
+                "description": "Connexion via Breeze API. Retourne un cookie de session.",
+                "operationId": "e66bd1bb545369f23f02bb874a6cd7d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "mor@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "401": {
+                        "description": "Identifiants incorrects"
+                    }
+                }
+            }
+        },
+        "/api/fournisseurs": {
+            "get": {
+                "tags": [
+                    "Fournisseurs"
+                ],
+                "summary": "Afficher la liste des fournisseurs",
+                "operationId": "389722c2cc3a17ca6e7b08fe438dde10",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Fournisseurs"
+                ],
+                "summary": "Créer fournisseur",
+                "operationId": "52d45e6c56adcb82247bcd65f162fa34",
+                "responses": {
+                    "201": {
+                        "description": "Créé"
+                    }
+                }
+            }
+        },
+        "/api/fournisseurs/{id}": {
+            "get": {
+                "tags": [
+                    "Fournisseurs"
+                ],
+                "summary": "Afficher fournisseur",
+                "operationId": "895483318667a8f106d76cfc71f1ca1f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Fournisseurs"
+                ],
+                "summary": "Modifier fournisseur",
+                "operationId": "7f60f9b10f1228e9a2809fd30dd798bc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Fournisseurs"
+                ],
+                "summary": "Supprimer fournisseur",
+                "operationId": "0b68bc0ebcd90fce5fb69d3fec4194b6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Fournisseurs",
+            "description": "Fournisseurs"
+        }
+    ]
+}

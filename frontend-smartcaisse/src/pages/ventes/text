@@ -1,0 +1,225 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import ProduitCard from "./ProduitCard";
+import Panier from "./Panier";
+import ModalPaiement from "./ModalPaiement";
+
+export default function Caisse() {
+  const [produits, setProduits] = useState([]);
+  const [search, setSearch] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [panier, setPanier] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [showPaiement, setShowPaiement] = useState(false);
+  const [modePaiement, setModePaiement] = useState("espece");
+  const [montantDonne, setMontantDonne] = useState("");
+  const [rendu, setRendu] = useState(0);
+
+  // 🔹 جلب المنتجات من API
+  const getProduits = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/api/produits");
+      setProduits(res.data.data || []);
+    } catch (err) {
+      console.error("Erreur produits:", err);
+      setProduits([]);
+    }
+  };
+
+  useEffect(() => {
+    getProduits();
+  }, []);
+
+  const produitsFiltres = produits.filter((p) =>
+    p.nom.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // 🔹 إضافة منتج للبانير
+  const ajouterAuPanier = (produit) => {
+    setPanier((prevPanier) => {
+      const exist = prevPanier.find((item) => item.id === produit.id);
+      if (exist) {
+        return prevPanier.map((item) =>
+          item.id === produit.id
+            ? { ...item, quantite: item.quantite + 1 }
+            : item
+        );
+      } else {
+        return [...prevPanier, { ...produit, quantite: 1 }];
+      }
+    });
+  };
+
+  // 🔹 حذف منتج من البانير
+  const supprimerDuPanier = (id) => {
+    setPanier(panier.filter((item) => item.id !== id));
+  };
+
+  // 🔹 حساب المجموع
+  useEffect(() => {
+    const totalCalc = panier.reduce(
+      (acc, item) => acc + item.prix_vente * item.quantite,
+      0
+    );
+    setTotal(totalCalc);
+  }, [panier]);
+
+  // 🔹 قارئ الباركود بدون focus
+  useEffect(() => {
+    let buffer = "";
+    let timer = null;
+
+    const handleKeyDown = (e) => {
+      if (timer) clearTimeout(timer);
+      if (["Shift", "Alt", "Control"].includes(e.key)) return;
+
+      if (e.key === "Enter") {
+        if (buffer.length > 0) {
+          const code = buffer.trim();
+          const produitTrouve = produits.find((p) => p.barcode === code);
+          if (produitTrouve) {
+            ajouterAuPanier(produitTrouve);
+          } else {
+            alert(`🚫 Produit introuvable: ${code}`);
+          }
+          buffer = "";
+        }
+      } else {
+        buffer += e.key;
+      }
+
+      timer = setTimeout(() => {
+        buffer = "";
+      }, 300);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [produits]);
+
+  // 🔹 فتح نافذة الدفع
+  const ouvrirPaiement = () => {
+    if (panier.length === 0) {
+      alert("Aucun produit dans le panier !");
+      return;
+    }
+    setShowPaiement(true);
+  };
+
+  // 🔹 حساب الصرف
+  useEffect(() => {
+    if (modePaiement === "espece") {
+      const renduCalc = montantDonne ? montantDonne - total : 0;
+      setRendu(renduCalc);
+    } else {
+      setRendu(0);
+    }
+  }, [montantDonne, total, modePaiement]);
+
+  // 🔹 تأكيد الدفع
+  const confirmerPaiement = async () => {
+    try {
+      const venteData = {
+        user_id: 1,
+        total,
+        status: "terminée",
+        mode_paiement: modePaiement,
+        montant_donne: montantDonne,
+        rendu: rendu,
+        produits: panier.map((p) => ({
+          id: p.id,
+          quantite: p.quantite,
+          prix_vente: p.prix_vente,
+        })),
+      };
+
+      await axios.post("http://127.0.0.1:8000/api/ventes", venteData);
+      alert("✅ Vente enregistrée avec succès !");
+      setPanier([]);
+      setTotal(0);
+      setShowPaiement(false);
+      setMontantDonne("");
+      setRendu(0);
+    } catch (err) {
+      console.error(err);
+      alert("❌ Erreur lors de l’enregistrement !");
+    }
+  };
+
+  return (
+    <div className="container-fluid py-3 bg-light" style={{ minHeight: "100vh" }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fw-bold text-primary">🧾 Caisse</h2>
+
+        <div className="d-flex gap-2">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="🔍 Rechercher un produit..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <input
+            type="text"
+            className="form-control"
+            placeholder="📷 Scanner le code-barres..."
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const produitTrouve = produits.find(
+                  (p) => p.barcode === barcode.trim()
+                );
+                if (produitTrouve) {
+                  ajouterAuPanier(produitTrouve);
+                } else {
+                  alert("🚫 Produit introuvable !");
+                }
+                setBarcode("");
+              }
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="row">
+        {/* Liste produits */}
+        <div className="col-lg-8 col-md-7 mb-4">
+          <div className="row g-3">
+            {produitsFiltres.length === 0 ? (
+              <p className="text-center text-muted mt-4">🚫 Aucun produit trouvé</p>
+            ) : (
+              produitsFiltres.map((p) => (
+                <ProduitCard key={p.id} produit={p} ajouterAuPanier={ajouterAuPanier} />
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Panier */}
+        <div className="col-lg-4 col-md-5">
+          <Panier
+            panier={panier}
+            total={total}
+            ouvrirPaiement={ouvrirPaiement}
+            supprimerDuPanier={supprimerDuPanier}
+          />
+        </div>
+      </div>
+
+      {/* Modal Paiement */}
+      <ModalPaiement
+        show={showPaiement}
+        modePaiement={modePaiement}
+        setModePaiement={setModePaiement}
+        montantDonne={montantDonne}
+        setMontantDonne={setMontantDonne}
+        rendu={rendu}
+        confirmerPaiement={confirmerPaiement}
+        fermerModal={() => setShowPaiement(false)}
+      />
+    </div>
+  );
+}

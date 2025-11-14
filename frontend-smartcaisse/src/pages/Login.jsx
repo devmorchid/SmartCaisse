@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Cookies from "js-cookie";
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,13 +18,26 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
-        email,
-        password,
-      });
+      await axios.get("/sanctum/csrf-cookie");
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      const res = await axios.post("/api/login", { email, password });
+
+      // TOKEN
+      localStorage.setItem("token", res.data.token);
+      Cookies.set("token", res.data.token);
+
+    
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          nom: res.data.user.nom,
+          email: res.data.user.email,
+          role: res.data.user.role,      
+          photo:
+            res.data.user.photo ??
+            "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        })
+      );
 
       navigate("/dashboard");
     } catch (err) {
@@ -31,7 +48,7 @@ export default function Login() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <div className="card shadow p-4" style={{ width: "350px" }}>
-        <h3 className="text-center mb-3">🔐 Connexion</h3>
+        <h3 className="text-center mb-3">Connexion</h3>
 
         {error && <div className="alert alert-danger">{error}</div>}
 

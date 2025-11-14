@@ -13,12 +13,24 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next,$role): Response
-    {
-         if (!$request->user() || !$request->user()->hasRole($role)) {
-            return response()->json(['message' => 'Accès refusé'], 403);
-        }
-
-        return $next($request);
+  public function handle(Request $request, Closure $next, $role)
+{
+    if (!$request->user()) {
+        return response()->json([
+            'error' => 'User NOT authenticated',
+            'token' => $request->bearerToken(),
+        ], 401);
     }
+
+    if (!$request->user()->hasRole($role)) {
+        return response()->json([
+            'error' => 'User authenticated but wrong role',
+            'user_roles' => $request->user()->roles->pluck('name'),
+            'required_role' => $role
+        ], 403);
+    }
+
+    return $next($request);
+}
+
 }

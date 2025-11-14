@@ -6,7 +6,6 @@ export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-   //Il n'a pas de jeton => Retour à la page de connexion
     return <Navigate to="/" replace />;
   }
 

@@ -14,46 +14,48 @@ class ChequeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+ public function index()
+{
+    $cheques = Cheque::with(['paiement.vente'])->get();
+
+    return response()->json($cheques);
+}
+
+  public function store(Request $request)
+{
+    $validated = $request->validate([
+        'paiement_id' => 'required|exists:paiements,id',
+        'numero' => 'required|string|max:255',
+        'banque' => 'required|string|max:255',
+        'date_encaissement' => 'required|date',
+        'statut' => 'nullable|string|in:en attente,encaisse',
+    ]);
+
+    $cheque = Cheque::create($validated);
+
+    return response()->json([
+        'message' => 'Chèque ajouté avec succès',
+        'cheque' => $cheque->load('paiement.vente')
+    ], 201);
+}
+
+
+     public function encaisser($id)
     {
-        //
+        $cheque = Cheque::findOrFail($id);
+        $cheque->statut = 'encaissé';
+        $cheque->save();
+
+        return response()->json(['message' => 'Chèque encaissé avec succès !']);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cheque $cheque)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+   
     public function edit(Cheque $cheque)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
    public function update(Request $request, Cheque $cheque)
 {
     $cheque->update($request->all());
@@ -66,9 +68,7 @@ class ChequeController extends Controller
 }
 
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Cheque $cheque)
     {
         //

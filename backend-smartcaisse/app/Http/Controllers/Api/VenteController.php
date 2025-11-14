@@ -1,101 +1,58 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Vente;
-use App\Models\Produit;
-use App\Events\NouvelleVenteCreee;
-use App\Events\StockFaible;
+use App\Models\Paiement;
+use App\Models\Cheque;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class VenteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-public function store(Request $request)
+   public function store(Request $request)
 {
-    
     $vente = Vente::create([
-        'user_id' => auth()->id(),
-        'status' => 'en cours',
-        'total' => 0
+        'user_id' => $request->user_id,
+        'total' => $request->total,
+        'status' => 'terminée',
     ]);
 
-    foreach ($request->produits as $item) {
-        $vente->produits()->attach($item['produit_id'], [
-            'quantite' => $item['quantite'],
-            'prix' => $item['prix']
+   
+    foreach ($request->produits as $p) {
+        $vente->produits()->attach($p['id'], [
+            'quantite' => $p['quantite'],
+            'prix' => $p['prix'],
+        ]);
+    }
+
+    
+    foreach ($request->paiements as $p) {
+        $paiement = Paiement::create([
+            'vente_id' => $vente->id,
+            'montant' => $p['montant'],
+            'methode' => $p['methode'],
+            'statut' => $p['statut'],
         ]);
 
-        // 🔄 Mise à jour du stock
-        $produit = Produit::find($item['produit_id']);
-        $produit->quantite_stock -= $item['quantite'];
-        $produit->save();
-
-        #🧩 Déclenchement
-        if ($produit->quantite_stock < 5) {
-        event(new StockFaible($produit));
+        if ($p['methode'] === 'chèque' && isset($p['cheque'])) {
+            Cheque::create([
+                'paiement_id' => $paiement->id,
+                'numero' => $p['cheque']['numero'] ?? '',
+                'banque' => $p['cheque']['banque'] ?? '',
+                'date_encaissement' => $p['cheque']['date_encaissement'] ?? null,
+                'statut' => 'en attente',
+            ]);
         }
-
     }
-    //notification 
-    event(new NouvelleVenteCreee($vente));
 
-    // 🔢 Calculer total automatiquement
-    $vente->calculerTotal();
-
-    return response()->json(['message' => 'Vente créée avec succès', 'vente' => $vente->load('produits')]);
+    return response()->json([
+        'message' => 'Vente enregistrée avec succès',
+        'vente_id' => $vente->id
+    ], 201);
 }
 
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vente $vente)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vente $vente)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Vente $vente)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Vente $vente)
-    {
-        //
-    }
 }

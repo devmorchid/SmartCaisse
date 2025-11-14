@@ -1,0 +1,39 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f5f7;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #1e1e2f;
+  color: white;
+  padding: 20px;
+}
+
+
+.main-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.navbar {
+  background-color: #fff;
+  padding: 15px 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+.page-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  
+  display: flex;
+  justify-content: center; 
+ 
+}
+

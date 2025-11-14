@@ -11,17 +11,13 @@ use App\Models\Vente;
 
 class PaiementController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+   
     public function create()
     {
         //
@@ -36,7 +32,7 @@ public function store(Request $request)
         'statut' => $request->methode === 'chèque' ? 'en attente' : 'confirmé',
     ]);
 
-    // 🧾 Si c’est un chèque → créer un enregistrement
+ 
     if ($request->methode === 'chèque') {
         Cheque::create([
             'paiement_id' => $paiement->id,
@@ -47,7 +43,7 @@ public function store(Request $request)
         ]);
     }
 
-    // 🧮 Mettre à jour le total payé de la vente
+  
     $vente = Vente::find($request->vente_id);
     $totalPaye = $vente->paiements()->sum('montant');
 
@@ -62,33 +58,25 @@ public function store(Request $request)
 }
 
 
-    /**
-     * Display the specified resource.
-     */
+  
     public function show(Paiement $paiement)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+  
     public function edit(Paiement $paiement)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+  
     public function update(Request $request, Paiement $paiement)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+ 
     public function destroy(Paiement $paiement)
     {
         //

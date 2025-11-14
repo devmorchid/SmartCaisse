@@ -18,7 +18,8 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'file'),
+    // 'driver' => env('SESSION_DRIVER', 'file'),
+    'driver' => env('SESSION_DRIVER', 'cookie'),
 
     /*
     |--------------------------------------------------------------------------
@@ -155,8 +156,8 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
-
+    // 'domain' => env('SESSION_DOMAIN'),
+    'domain' => env('SESSION_DOMAIN', null),
     /*
     |--------------------------------------------------------------------------
     | HTTPS Only Cookies
@@ -168,7 +169,9 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // 'secure' => env('SESSION_SECURE_COOKIE'),
+
+    'secure' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -196,7 +199,8 @@ return [
     |
     */
 
-    'same_site' => 'lax',
+    // 'same_site' => 'lax',
+    'same_site' => 'none',
 
     /*
     |--------------------------------------------------------------------------
@@ -209,6 +213,6 @@ return [
     |
     */
 
-    'partitioned' => false,
+    'partitioned' => true,
 
 ];

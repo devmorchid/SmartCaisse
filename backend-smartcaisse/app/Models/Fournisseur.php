@@ -10,7 +10,7 @@ class Fournisseur extends Model
     use HasFactory;
 
 
-    protected $fillable = ['nom', 'email', 'telephone', 'adresse'];
+    protected $fillable = ['nom', 'email', 'telephone', 'adresse', 'user_id'];
 
     public function colis()
     {
