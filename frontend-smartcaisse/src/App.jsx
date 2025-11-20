@@ -22,6 +22,8 @@ import Caisse from "./pages/ventes/Caisse";
 import Profil from './pages/users/Profil'
 import Users from './pages/users/Users'
 
+import NotFound from "./pages/NotFound";
+
 
 
 function App() {
@@ -59,7 +61,7 @@ function App() {
   <Route path="/Cheques" element={ <ProtectedRoute> <DashboardLayout> <Cheques /> </DashboardLayout> </ProtectedRoute>}/>
   <Route path="/profile" element={<ProtectedRoute> <DashboardLayout> <Profil /></DashboardLayout></ProtectedRoute>}/>
   <Route path="/Users" element={<ProtectedRoute> <DashboardLayout> <Users /></DashboardLayout></ProtectedRoute>}/>
-
+<Route path="*" element={<NotFound />} />
   
 
       </Routes>

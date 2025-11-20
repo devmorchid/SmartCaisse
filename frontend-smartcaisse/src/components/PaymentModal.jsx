@@ -58,7 +58,7 @@ export default function PaymentModal({ total, panier, onClose, setPanier, setTot
         })),
     };
 
-    console.log("Data sent:", data);
+    // console.log("Data sent:", data);
 
     try {
       const res = await axios.post("http://127.0.0.1:8000/api/ventes", data, {

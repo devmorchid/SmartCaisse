@@ -2,6 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "SmartCaisse API",
+        "description": "Documentation de l'API SmartCaisse",
         "version": "1.0.0"
     },
     "servers": [
@@ -11,66 +12,14 @@
         }
     ],
     "paths": {
-        "/api/register": {
+        "/login": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Créer un nouvel utilisateur (Register)",
-                "description": "Inscription d'un utilisateur via Breeze API",
-                "operationId": "a48a8657f05148e89f60052a1cd28b01",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "password",
-                                    "password_confirmation"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Mor"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "mor@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Utilisateur créé avec succès"
-                    },
-                    "422": {
-                        "description": "Erreur de validation"
-                    }
-                }
-            }
-        },
-        "/api/": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Connexion utilisateur (Login)",
-                "description": "Connexion via Breeze API. Retourne un cookie de session.",
-                "operationId": "e66bd1bb545369f23f02bb874a6cd7d7",
+                "summary": "Connexion utilisateur",
+                "description": "Authentifie l'utilisateur et retourne un token Bearer.",
+                "operationId": "dc0e4244ecd9f36c4be32f05fcd980ae",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -83,11 +32,11 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example": "mor@example.com"
+                                        "example": "admin@caisse.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "password123"
+                                        "example": "12345678"
                                     }
                                 },
                                 "type": "object"
@@ -97,51 +46,174 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Connexion réussie"
+                        "description": "Login réussi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|XwTgHjK98Yx..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": "Identifiants incorrects"
+                        "description": "Identifiants invalides"
                     }
                 }
             }
         },
-        "/api/fournisseurs": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Créer un nouvel utilisateur",
+                "operationId": "822f178ac2262f09ebe2f66a409fd2dc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@caisse.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnexion",
+                "operationId": "d0d656a1c874a802676f87bcabddd947",
+                "responses": {
+                    "200": {
+                        "description": "Déconnecté avec succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/fournisseurs": {
             "get": {
                 "tags": [
                     "Fournisseurs"
                 ],
                 "summary": "Afficher la liste des fournisseurs",
-                "operationId": "389722c2cc3a17ca6e7b08fe438dde10",
+                "operationId": "0fb09101e69ff009d37e56f065266232",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Liste des fournisseurs"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
                     "Fournisseurs"
                 ],
-                "summary": "Créer fournisseur",
-                "operationId": "52d45e6c56adcb82247bcd65f162fa34",
+                "summary": "Créer un fournisseur",
+                "operationId": "9dfcb11ee96d3f5bbea692243d3ceecc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "email",
+                                    "telephone"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Fournisseur A"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "email@test.com"
+                                    },
+                                    "telephone": {
+                                        "type": "string",
+                                        "example": "0600123456"
+                                    },
+                                    "adresse": {
+                                        "type": "string",
+                                        "example": "Casablanca"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
-                        "description": "Créé"
+                        "description": "Fournisseur créé avec succès"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/fournisseurs/{id}": {
+        "/fournisseurs/{id}": {
             "get": {
                 "tags": [
                     "Fournisseurs"
                 ],
-                "summary": "Afficher fournisseur",
-                "operationId": "895483318667a8f106d76cfc71f1ca1f",
+                "summary": "Afficher un fournisseur",
+                "operationId": "cd06903b9a5231cb0d81eddc9e36e090",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID du fournisseur",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -150,42 +222,78 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Infos du fournisseur"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "Fournisseurs"
                 ],
-                "summary": "Modifier fournisseur",
-                "operationId": "7f60f9b10f1228e9a2809fd30dd798bc",
+                "summary": "Modifier un fournisseur",
+                "operationId": "53c2ef4b30543c15babffaf86fe206c3",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID du fournisseur",
                         "required": true,
                         "schema": {
                             "type": "integer"
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Nouveau nom"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "new@mail.com"
+                                    },
+                                    "telephone": {
+                                        "type": "string",
+                                        "example": "0612345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Updated"
+                        "description": "Fournisseur mis à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Fournisseurs"
                 ],
-                "summary": "Supprimer fournisseur",
-                "operationId": "0b68bc0ebcd90fce5fb69d3fec4194b6",
+                "summary": "Supprimer un fournisseur",
+                "operationId": "4a1baadaa491d9d35725c92b87b4e851",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID du fournisseur",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -194,20 +302,619 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Deleted"
+                        "description": "Fournisseur supprimé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/produits": {
+            "get": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Lister tous les produits avec pagination",
+                "operationId": "a5a994778b570dc2e40fa6816b1845cc",
+                "responses": {
+                    "200": {
+                        "description": "Liste des produits paginés"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Créer un produit",
+                "description": "Ajoute un nouveau produit avec possibilité d'uploader une image",
+                "operationId": "12319218623440e3f6a958dfa048c231",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prix_vente",
+                                    "cout",
+                                    "quantite_stock",
+                                    "stock_minimum",
+                                    "categorie",
+                                    "fournisseur_id",
+                                    "reference",
+                                    "barcode"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Produit A"
+                                    },
+                                    "prix_vente": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 120.5
+                                    },
+                                    "cout": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 80
+                                    },
+                                    "quantite_stock": {
+                                        "type": "integer",
+                                        "example": 50
+                                    },
+                                    "stock_minimum": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "categorie": {
+                                        "type": "string",
+                                        "example": "Electronique"
+                                    },
+                                    "fournisseur_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "REF123"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "example": "1234567890123"
+                                    },
+                                    "image": {
+                                        "description": "Image du produit (facultative)",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Produit ajouté avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Produit ajouté avec succès ✔️"
+                                        },
+                                        "produit": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nom": {
+                                                    "type": "string",
+                                                    "example": "Produit A"
+                                                },
+                                                "prix_vente": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 120.5
+                                                },
+                                                "cout": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 80
+                                                },
+                                                "quantite_stock": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "stock_minimum": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "categorie": {
+                                                    "type": "string",
+                                                    "example": "Electronique"
+                                                },
+                                                "fournisseur_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "reference": {
+                                                    "type": "string",
+                                                    "example": "REF123"
+                                                },
+                                                "barcode": {
+                                                    "type": "string",
+                                                    "example": "1234567890123"
+                                                },
+                                                "image": {
+                                                    "type": "string",
+                                                    "example": "produits/abc123.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The nom field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/produits/ventes": {
+            "get": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Lister tous les produits selon le rôle de l'utilisateur",
+                "operationId": "5e12faaa3f71de246f020676bbbe826d",
+                "responses": {
+                    "200": {
+                        "description": "Liste des produits selon le rôle"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/produits/{id}": {
+            "put": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Mettre à jour un produit",
+                "operationId": "b4de724477d6b3c63b6a829f988bd1d2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du produit",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prix_vente",
+                                    "cout",
+                                    "quantite_stock",
+                                    "stock_minimum",
+                                    "categorie",
+                                    "fournisseur_id",
+                                    "reference",
+                                    "barcode"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Produit A modifié"
+                                    },
+                                    "prix_vente": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    },
+                                    "cout": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 90
+                                    },
+                                    "quantite_stock": {
+                                        "type": "integer",
+                                        "example": 40
+                                    },
+                                    "stock_minimum": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "categorie": {
+                                        "type": "string",
+                                        "example": "Electronique"
+                                    },
+                                    "fournisseur_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "REF124"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "example": "1234567890123"
+                                    },
+                                    "image": {
+                                        "description": "Image du produit (optionnelle)",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Produit mis à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Produit mis à jour avec succès"
+                                        },
+                                        "produit": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Produit introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Mettre à jour un produit",
+                "description": "Mettre à jour un produit existant. Cette route utilise POST + _method=PUT pour supporter l'upload d'image.",
+                "operationId": "a4676f61345a40c74372f942c841a485",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du produit",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "_method": {
+                                        "description": "Permet d'émuler une requête PUT",
+                                        "type": "string",
+                                        "example": "PUT"
+                                    },
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Chaise améliorée"
+                                    },
+                                    "prix_vente": {
+                                        "type": "number",
+                                        "example": 199.99
+                                    },
+                                    "cout": {
+                                        "type": "number",
+                                        "example": 120
+                                    },
+                                    "quantite_stock": {
+                                        "type": "integer",
+                                        "example": 30
+                                    },
+                                    "stock_minimum": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "categorie": {
+                                        "type": "string",
+                                        "example": "Mobilier"
+                                    },
+                                    "fournisseur_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "REF-CHA-2026"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "example": "9876543210987"
+                                    },
+                                    "image": {
+                                        "description": "Nouvelle image du produit (optionnelle)",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Produit mis à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Produit mis à jour avec succès ✔️"
+                                        },
+                                        "produit": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Produit non trouvé"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Supprimer un produit",
+                "operationId": "2b841a224ac0df70bf8bb6767a69de48",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du produit",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Produit supprimé avec succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ventes": {
+            "post": {
+                "tags": [
+                    "Ventes"
+                ],
+                "summary": "Créer une nouvelle vente",
+                "description": "Enregistre une vente avec ses produits et paiements",
+                "operationId": "5b206d7c2a94683df862e405b9b4e222",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150.5
+                                    },
+                                    "produits": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "quantite": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "prix": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 50
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "paiements": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "montant": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150.5
+                                                },
+                                                "methode": {
+                                                    "type": "string",
+                                                    "example": "chèque"
+                                                },
+                                                "statut": {
+                                                    "type": "string",
+                                                    "example": "terminé"
+                                                },
+                                                "cheque": {
+                                                    "properties": {
+                                                        "numero": {
+                                                            "type": "string",
+                                                            "example": "CHQ12345"
+                                                        },
+                                                        "banque": {
+                                                            "type": "string",
+                                                            "example": "Attijari"
+                                                        },
+                                                        "date_encaissement": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "2025-11-20"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vente enregistrée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vente enregistrée avec succès"
+                                        },
+                                        "vente_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
     "tags": [
         {
             "name": "Auth",
-            "description": "Auth"
+            "description": "Endpoints d'authentification (Login, Register, Logout)"
         },
         {
             "name": "Fournisseurs",
             "description": "Fournisseurs"
+        },
+        {
+            "name": "Produits",
+            "description": "Produits"
+        },
+        {
+            "name": "Ventes",
+            "description": "Ventes"
         }
     ]
 }

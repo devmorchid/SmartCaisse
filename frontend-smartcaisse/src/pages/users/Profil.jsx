@@ -25,9 +25,10 @@ export default function Profil() {
         setForm({ name: res.data.name, email: res.data.email });
       })
       .catch(() => setMessage("⚠️ Erreur lors du chargement du profil"));
-  }, []);
+  }, [token]);
 
-  const handleProfileUpdate = async () => {
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
     try {
       await axios.put("http://localhost:8000/api/profile", form, {
         headers: { Authorization: `Bearer ${token}` },
@@ -38,11 +39,16 @@ export default function Profil() {
     }
   };
 
-  const handlePasswordChange = async () => {
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
     try {
-      await axios.put("http://localhost:8000/api/profile/password", passwordData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        "http://localhost:8000/api/profile/password",
+        passwordData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setMessage("🔑 Mot de passe changé avec succès !");
       setPasswordData({
         current_password: "",
@@ -55,9 +61,8 @@ export default function Profil() {
   };
 
   return (
-    
     <div className="container py-5">
-         
+   
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
           <div className="card shadow-lg border-0 rounded-4">
@@ -67,7 +72,7 @@ export default function Profil() {
                 <h4 className="mt-2">{user.name}</h4>
                 <p className="text-muted">{user.email}</p>
               </div>
- 
+
               {message && (
                 <div
                   className={`alert ${
@@ -80,60 +85,76 @@ export default function Profil() {
                 </div>
               )}
 
-              <h5 className="fw-bold mb-3">📝 Modifier mes informations</h5>
-              <input
-                className="form-control mb-2"
-                placeholder="Nom"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <input
-                className="form-control mb-3"
-                placeholder="Email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-              <button className="btn btn-primary w-100 mb-4" onClick={handleProfileUpdate}>
-                💾 Enregistrer les modifications
-              </button>
+              {/* Formulaire Profile */}
+              <form onSubmit={handleProfileUpdate}>
+                <h5 className="fw-bold mb-3">📝 Modifier mes informations</h5>
+                <input
+                  className="form-control mb-2"
+                  placeholder="Nom"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+                <input
+                  className="form-control mb-3"
+                  placeholder="Email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+                <button type="submit" className="btn btn-primary w-100 mb-4">
+                  💾 Enregistrer les modifications
+                </button>
+              </form>
 
-              <h5 className="fw-bold mb-3">
-                <FaKey className="me-2" />
-                Modifier le mot de passe
-              </h5>
-              <input
-                className="form-control mb-2"
-                type="password"
-                placeholder="Mot de passe actuel"
-                value={passwordData.current_password}
-                onChange={(e) =>
-                  setPasswordData({ ...passwordData, current_password: e.target.value })
-                }
-              />
-              <input
-                className="form-control mb-2"
-                type="password"
-                placeholder="Nouveau mot de passe"
-                value={passwordData.new_password}
-                onChange={(e) =>
-                  setPasswordData({ ...passwordData, new_password: e.target.value })
-                }
-              />
-              <input
-                className="form-control mb-3"
-                type="password"
-                placeholder="Confirmer le mot de passe"
-                value={passwordData.new_password_confirmation}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    new_password_confirmation: e.target.value,
-                  })
-                }
-              />
-              <button className="btn btn-warning w-100" onClick={handlePasswordChange}>
-                🔄 Modifier le mot de passe
-              </button>
+              {/* Formulaire Password */}
+              <form onSubmit={handlePasswordChange}>
+  {/* Hidden username/email for accessibility */}
+  <input
+    type="text"
+    name="username"
+    value={user.email || ""}
+    autoComplete="username"
+    style={{ display: "none" }}
+    readOnly
+  />
+
+  <input
+    className="form-control mb-2"
+    type="password"
+    placeholder="Mot de passe actuel"
+    value={passwordData.current_password}
+    autoComplete="current-password"
+    onChange={(e) =>
+      setPasswordData({ ...passwordData, current_password: e.target.value })
+    }
+  />
+  <input
+    className="form-control mb-2"
+    type="password"
+    placeholder="Nouveau mot de passe"
+    value={passwordData.new_password}
+    autoComplete="new-password"
+    onChange={(e) =>
+      setPasswordData({ ...passwordData, new_password: e.target.value })
+    }
+  />
+  <input
+    className="form-control mb-3"
+    type="password"
+    placeholder="Confirmer le mot de passe"
+    value={passwordData.new_password_confirmation}
+    autoComplete="new-password"
+    onChange={(e) =>
+      setPasswordData({
+        ...passwordData,
+        new_password_confirmation: e.target.value,
+      })
+    }
+  />
+  <button type="submit" className="btn btn-warning w-100">
+    🔄 Modifier le mot de passe
+  </button>
+</form>
+
             </div>
           </div>
         </div>

@@ -30,13 +30,14 @@ export default function Navbar() {
 
           </span>
 
-          <img
-            src={user.photo}
-            alt="profil"
-            width="40"
-            height="40"
-            className="rounded-circle border"
-          />
+         <img
+  src={user.photo || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+  alt="profil"
+  width="40"
+  height="40"
+  className="rounded-circle border"
+/>
+
         </div>
       </div>
     </nav>

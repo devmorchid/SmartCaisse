@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->get('/dashboard', [DashboardController::class
     Route::post('produits', [ProduitController::class, 'store']);     
     Route::get('produits/{id}', [ProduitController::class, 'show']);   
     Route::put('produits/{id}', [ProduitController::class, 'update']);
+    Route::post('produits/{id}', [ProduitController::class, 'update']);
     Route::delete('produits/{id}', [ProduitController::class, 'destroy']);
 
     Route::post('ventes',[VenteController::class, 'store']);
