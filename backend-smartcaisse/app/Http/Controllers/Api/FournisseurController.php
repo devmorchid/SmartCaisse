@@ -8,20 +8,22 @@ use App\Models\Fournisseur;
 
 class FournisseurController extends Controller
 {
+    
     // =============================
-    // 1️⃣  AFFICHER TOUS LES FOURNISSEURS
+    //  AFFICHER TOUS LES FOURNISSEURS
     // =============================
     public function index(Request $request)
     {
         $user = $request->user();
 
+        logger($user);
       
         if ($user->hasRole('admin')) {
             return response()->json(Fournisseur::all());
         }
 
    
-        if ($user->hasRole('manager')) {
+        if ($user->hasRole('Manager')) {
             return response()->json(
                 Fournisseur::where('user_id', $user->id)->get()
             );
